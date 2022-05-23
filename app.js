@@ -10,6 +10,8 @@ init();
 
 const refreshMinuteInterval = 10;
 
+console.log("App started!");
+
 setTimeout(
   () =>
     getFutureOrders(async (orders) => {
