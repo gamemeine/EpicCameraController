@@ -1,11 +1,29 @@
-import { addUser } from "./camera/controller.js";
-import { convertDate } from "./utils/date.js";
+import { addMultipleUsers, getAddedUsers } from "./camera/controller.js";
+import { getFutureOrders, init } from "./db/db.js";
+import dotenv from "dotenv";
 
-const startDate = convertDate(new Date());
-const endDate = convertDate(new Date().setDate(new Date().getDate() + 7));
-const plateNumber = "LOSOWY_NUMER";
-const vehicleOwner = "Robot :~D";
+//config
+dotenv.config();
 
-await addUser(plateNumber, vehicleOwner, startDate, endDate)
-  .then(() => console.log("Success!"))
-  .catch((e) => console.error(e));
+//db connection
+init();
+
+const refreshMinuteInterval = 10;
+
+setTimeout(
+  () =>
+    getFutureOrders(async (orders) => {
+      if (orders == null) return;
+
+      const notAddedUsers = [];
+      const addedUsers = await getAddedUsers();
+
+      for (let i = 0; i < orders.length; i++) {
+        const order = orders[i];
+        if (!addedUsers.includes(order.plate)) notAddedUsers.push(order);
+      }
+
+      await addMultipleUsers(notAddedUsers);
+    }),
+  refreshMinuteInterval * 60 * 1000
+);
