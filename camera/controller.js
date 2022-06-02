@@ -1,7 +1,9 @@
 import puppeteer from "puppeteer";
 import { convertDate } from "../utils/date.js";
 
-export const getAddedUsers = async () => {
+const elementInteractionTimeout = 2500; //in ms
+
+export const getAddedCustomers = async () => {
   const browser = await puppeteer.launch({
     // headless: false,
   });
@@ -15,25 +17,25 @@ export const getAddedUsers = async () => {
     "#login > div.login-container > div > div.i-nothing.login-inputbox.fn-clear > form > div.ui-button-box.login-btnbox > a:nth-child(1)"
   );
   //settings
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#sys_main > li:nth-child(4)");
 
   //block and allow list
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#set-menu > li:nth-child(1) > ul > li:nth-child(5)");
 
   //allowlist
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#page_blackWhiteListsConfig > ul > li:nth-child(2)");
 
   //refresh list
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click(
     "#page_blackWhiteListsConfig > div > div.tab-panel.ui-form.current > div:nth-child(2) > a"
   );
 
   //get records
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   const data = await page.evaluate(async () => {
     const _data = [];
     const recordsCount = document.querySelectorAll(
@@ -57,7 +59,7 @@ export const getAddedUsers = async () => {
   return data;
 };
 
-export const addUser = async (user) => {
+export const addCustomer = async (user) => {
   const { date, plate, customer } = user;
 
   const browser = await puppeteer.launch({
@@ -73,25 +75,25 @@ export const addUser = async (user) => {
     "#login > div.login-container > div > div.i-nothing.login-inputbox.fn-clear > form > div.ui-button-box.login-btnbox > a:nth-child(1)"
   );
   //settings
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#sys_main > li:nth-child(4)");
 
   //block and allow list
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#set-menu > li:nth-child(1) > ul > li:nth-child(5)");
 
   //allowlist
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#page_blackWhiteListsConfig > ul > li:nth-child(2)");
 
   //add
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click(
     "#page_blackWhiteListsConfig > div > div.tab-panel.ui-form.current > div:nth-child(9) > a:nth-child(2)"
   );
 
   //platenumber
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.type("#bw_add_plateNumber", plate);
 
   //cardId
@@ -121,14 +123,14 @@ export const addUser = async (user) => {
 
   //save
   await page.click("#bw_add_plateNumber");
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#bw_add_content > div.u-dialog-foot > a:nth-child(2)");
 
   //leave
   await browser.close();
 };
 
-export const addMultipleUsers = async (users = []) => {
+export const addMultipleCustomers = async (users = []) => {
   const browser = await puppeteer.launch({
     // headless: false,
   });
@@ -142,28 +144,28 @@ export const addMultipleUsers = async (users = []) => {
     "#login > div.login-container > div > div.i-nothing.login-inputbox.fn-clear > form > div.ui-button-box.login-btnbox > a:nth-child(1)"
   );
   //settings
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#sys_main > li:nth-child(4)");
 
   //block and allow list
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#set-menu > li:nth-child(1) > ul > li:nth-child(5)");
 
   //allowlist
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(elementInteractionTimeout);
   await page.click("#page_blackWhiteListsConfig > ul > li:nth-child(2)");
 
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
 
     //add btn
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(elementInteractionTimeout);
     await page.click(
       "#page_blackWhiteListsConfig > div > div.tab-panel.ui-form.current > div:nth-child(9) > a:nth-child(2)"
     );
 
     //platenumber
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(elementInteractionTimeout);
     await page.evaluate(() => {
       const input = document.querySelector("#bw_add_plateNumber");
       input.value = "";
@@ -206,13 +208,16 @@ export const addMultipleUsers = async (users = []) => {
       const input = document.querySelector("#bw_add_masterOfCar");
       input.value = "";
     });
-    await page.type("#bw_add_masterOfCar", user.customer);
+    await page.type(
+      "#bw_add_masterOfCar",
+      user.customer.replace(/[^\w ]/g, "")
+    );
 
     //save
     await page.click("#bw_add_plateNumber");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(elementInteractionTimeout);
     await page.click("#bw_add_content > div.u-dialog-foot > a:nth-child(2)");
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(elementInteractionTimeout * 2);
     await page.click("#bw_add_content > div.u-dialog-foot > a:nth-child(1)");
   }
 

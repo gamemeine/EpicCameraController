@@ -1,31 +1,11 @@
-import { addMultipleUsers, getAddedUsers } from "./camera/controller.js";
-import { getFutureOrders, init } from "./db/db.js";
 import dotenv from "dotenv";
+import logger from "./utils/logger.js";
+import { syncCustomersWithCamera } from "./main/syncCustomersWithCamera.js";
 
 //config
 dotenv.config();
 
-//db connection
-init();
+const interval = process.env.SYNC_INTERVAL || 30;
+setInterval(() => syncCustomersWithCamera(), interval * 60 * 1000);
 
-const refreshMinuteInterval = 10;
-
-console.log("App started!");
-
-setTimeout(
-  () =>
-    getFutureOrders(async (orders) => {
-      if (orders == null) return;
-
-      const notAddedUsers = [];
-      const addedUsers = await getAddedUsers();
-
-      for (let i = 0; i < orders.length; i++) {
-        const order = orders[i];
-        if (!addedUsers.includes(order.plate)) notAddedUsers.push(order);
-      }
-
-      await addMultipleUsers(notAddedUsers);
-    }),
-  refreshMinuteInterval * 60 * 1000
-);
+logger.info("App successfully started!");

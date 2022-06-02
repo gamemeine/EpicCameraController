@@ -1,4 +1,4 @@
-export const validPlate = (plate) => {
+export const validatePlate = (plate) => {
   if (plate.startsWith("ZMIANA")) return false;
   if (plate.startsWith("WOLNE")) return false;
   if (plate.startsWith("SZKOLENIE")) return false;

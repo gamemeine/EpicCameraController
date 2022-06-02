@@ -22,7 +22,9 @@
   "homepage": "https://github.com/gamemeine/EpicCameraController#readme",
   "dependencies": {
     "dotenv": "^16.0.1",
+    "mssql": "^8.1.2",
     "puppeteer": "^14.1.1",
-    "tedious": "^14.5.0"
+    "tedious": "^14.5.0",
+    "winston": "^3.7.2"
   }
 }
